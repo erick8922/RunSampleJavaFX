@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+
+    <VBox alignment="CENTER" layoutX="57.0" layoutY="23.0" prefHeight="351.0" prefWidth="477.0" spacing="12.0" AnchorPane.leftAnchor="57.0" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="23.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="STUDENT INFORMATION SYSTEM" />
+
+        <Label style="-fx-font-size: 16px;" text="Manuel B Guiñes National HighSchool" />
+
+        <TextField prefHeight="35.0" prefWidth="372.0" promptText="Username" />
+
+        <PasswordField prefHeight="35.0" promptText="Password" />
+
+        <Button prefHeight="35.0" prefWidth="300.0" text="LOGIN" />
+
+        <Label text="Don't have an account?" textAlignment="JUSTIFY">
+         <cursor>
+            <Cursor fx:constant="NONE" />
+         </cursor></Label>
+
+        <Hyperlink prefHeight="23.0" prefWidth="78.0" text="Register here" />
+
+    </VBox>
+
+</AnchorPane>
