@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ManuelBGuñesSystem.StudentDashboardController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="10.0" style="-fx-background-color: #1e3a5f;">
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+            <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="STUDENT INFORMATION SYSTEM" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="userLabel" style="-fx-text-fill: white; -fx-font-size: 14px;" text="Student" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="200.0" spacing="8.0" style="-fx-background-color: #f0f3f7;">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+
+            <Button maxWidth="Infinity" onAction="#showHome" prefHeight="40.0" text="Home" />
+            <Button maxWidth="Infinity" onAction="#showProfile" prefHeight="40.0" text="My Profile" />
+            <Button maxWidth="Infinity" onAction="#showSubjects" prefHeight="40.0" text="My Subjects" />
+            <Button maxWidth="Infinity" onAction="#showTranscript" prefHeight="40.0" text="Transcript" />
+            <Button maxWidth="Infinity" onAction="#showCredentials" prefHeight="40.0" text="Credentials" />
+            <Button maxWidth="Infinity" onAction="#showDocumentRequests" prefHeight="40.0" text="Document Requests" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button maxWidth="Infinity" onAction="#handleLogout" prefHeight="40.0" style="-fx-background-color: #c0392b; -fx-text-fill: white;" text="LOGOUT" />
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="15.0">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+
+            <Label fx:id="contentTitle" style="-fx-font-size: 22px; -fx-font-weight: bold;" text="Home" />
+            <Label fx:id="contentText" style="-fx-font-size: 14px;" text="" wrapText="true" />
+        </VBox>
+    </center>
+
+</BorderPane>
