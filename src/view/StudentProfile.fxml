@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfileController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+    </padding>
+
+    <Label styleClass="page-title" text="My Profile" />
+
+    <!-- Summary card -->
+    <HBox alignment="CENTER_LEFT" spacing="18.0" styleClass="card">
+        <Label fx:id="avatarLabel" alignment="CENTER" styleClass="avatar" text="?" />
+        <VBox spacing="4.0">
+            <Label fx:id="nameLabel" styleClass="profile-name" />
+            <Label fx:id="studentNoLabel" styleClass="page-subtitle" />
+            <HBox>
+                <Label fx:id="statusBadge" />
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <!-- Personal information (read only) -->
+    <VBox spacing="14.0" styleClass="card">
+        <Label styleClass="section-title" text="Personal Information" />
+        <GridPane hgap="30.0" vgap="16.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+            </columnConstraints>
+
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label styleClass="field-label" text="GENDER" />
+                <Label fx:id="genderValue" styleClass="field-value" />
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label styleClass="field-label" text="BIRTH DATE" />
+                <Label fx:id="birthDateValue" styleClass="field-value" />
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label styleClass="field-label" text="EMAIL" />
+                <Label fx:id="emailValue" styleClass="field-value" />
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label styleClass="field-label" text="USERNAME" />
+                <Label fx:id="usernameValue" styleClass="field-value" />
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <!-- Contact information (editable) -->
+    <VBox spacing="10.0" styleClass="card">
+        <Label styleClass="section-title" text="Contact Information" />
+        <Label styleClass="page-subtitle" text="You can update your contact number and address." />
+
+        <Label styleClass="field-label" text="CONTACT NO." />
+        <TextField fx:id="contactNoField" promptText="e.g. 09123456789" />
+
+        <Label styleClass="field-label" text="ADDRESS" />
+        <TextField fx:id="addressField" promptText="House no., street, barangay, city" />
+
+        <HBox alignment="CENTER_LEFT" spacing="14.0">
+            <Button fx:id="saveButton" onAction="#handleSave" styleClass="btn-primary" text="Save Changes" />
+            <Label fx:id="messageLabel" />
+        </HBox>
+    </VBox>
+
+</VBox>

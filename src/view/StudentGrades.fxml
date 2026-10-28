@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GradesController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+    </padding>
+
+    <Label styleClass="page-title" text="My Grades" />
+    <Label styleClass="page-subtitle" text="Your grades per subject and grading period." />
+
+    <VBox styleClass="card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="gradesTable" minHeight="220.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn prefWidth="100.0" text="Code">
+                    <cellValueFactory><PropertyValueFactory property="subjectCode" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="220.0" text="Subject">
+                    <cellValueFactory><PropertyValueFactory property="subjectName" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="110.0" text="School Year">
+                    <cellValueFactory><PropertyValueFactory property="schoolYear" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="120.0" text="Period">
+                    <cellValueFactory><PropertyValueFactory property="gradingPeriod" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="80.0" text="Grade">
+                    <cellValueFactory><PropertyValueFactory property="grade" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="remarksColumn" prefWidth="100.0" text="Remarks">
+                    <cellValueFactory><PropertyValueFactory property="remarks" /></cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

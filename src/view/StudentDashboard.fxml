@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="640.0" prefWidth="1000.0" styleClass="page" stylesheets="@app.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StudentDashboardController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="64.0" styleClass="app-header">
+            <Label styleClass="app-title" text="Student Information System" />
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER" styleClass="user-chip">
+                <Label fx:id="userLabel" styleClass="user-chip-text" text="Student" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="220.0" spacing="6.0" styleClass="sidebar">
+            <fx:define>
+                <ToggleGroup fx:id="navGroup" />
+            </fx:define>
+
+            <Label styleClass="sidebar-caption" text="MENU" />
+            <ToggleButton fx:id="homeButton" maxWidth="Infinity" onAction="#showHome" selected="true" styleClass="nav-button" text="Home" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="profileButton" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-button" text="My Profile" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="subjectsButton" maxWidth="Infinity" onAction="#showSubjects" styleClass="nav-button" text="My Subjects" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="gradesButton" maxWidth="Infinity" onAction="#showGrades" styleClass="nav-button" text="My Grades" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="transcriptButton" maxWidth="Infinity" onAction="#showTranscript" styleClass="nav-button" text="Transcript" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="credentialsButton" maxWidth="Infinity" onAction="#showCredentials" styleClass="nav-button" text="Credentials" toggleGroup="$navGroup" />
+            <ToggleButton fx:id="requestsButton" maxWidth="Infinity" onAction="#showDocumentRequests" styleClass="nav-button" text="Document Requests" toggleGroup="$navGroup" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button maxWidth="Infinity" onAction="#handleLogout" styleClass="nav-logout" text="Log Out" />
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll">
+            <StackPane fx:id="contentArea" alignment="TOP_LEFT" />
+        </ScrollPane>
+    </center>
+
+</BorderPane>

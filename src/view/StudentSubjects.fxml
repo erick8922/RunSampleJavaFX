@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SubjectsController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+    </padding>
+
+    <Label styleClass="page-title" text="My Subjects" />
+    <Label styleClass="page-subtitle" text="The subjects and sections you are enrolled in." />
+
+    <VBox styleClass="card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="subjectsTable" minHeight="220.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn prefWidth="100.0" text="Code">
+                    <cellValueFactory><PropertyValueFactory property="subjectCode" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="220.0" text="Subject">
+                    <cellValueFactory><PropertyValueFactory property="subjectName" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="70.0" text="Units">
+                    <cellValueFactory><PropertyValueFactory property="units" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="130.0" text="Section">
+                    <cellValueFactory><PropertyValueFactory property="section" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="110.0" text="School Year">
+                    <cellValueFactory><PropertyValueFactory property="schoolYear" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="100.0" text="Grade Level">
+                    <cellValueFactory><PropertyValueFactory property="gradeLevel" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="statusColumn" prefWidth="110.0" text="Status">
+                    <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

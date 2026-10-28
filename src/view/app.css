@@ -1,0 +1,192 @@
+/* ============================================================
+   Student Information System - Global Theme
+   ============================================================ */
+
+.root {
+    -app-dark: #1e3a5f;
+    -app-brand: #2563eb;
+    -app-light: #e8f0fe;
+    -app-bg: #f4f6fa;
+    -app-text: #1f2937;
+    -app-muted: #6b7280;
+    -app-border: #d9dee7;
+    -app-success: #15803d;
+    -app-danger: #c0392b;
+    -fx-font-family: "Segoe UI", "System";
+    -fx-font-size: 14px;
+}
+
+.label { -fx-text-fill: -app-text; }
+
+/* ---------- Layout ---------- */
+.page { -fx-background-color: -app-bg; }
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 12;
+    -fx-padding: 20 24;
+    -fx-effect: dropshadow(gaussian, rgba(16, 24, 40, 0.06), 12, 0, 0, 2);
+}
+
+.content-scroll, .content-scroll > .viewport { -fx-background-color: transparent; }
+.content-scroll { -fx-padding: 0; -fx-background-insets: 0; }
+
+/* ---------- Typography ---------- */
+.page-title { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: -app-dark; }
+.page-subtitle { -fx-text-fill: -app-muted; }
+.section-title { -fx-font-size: 16px; -fx-font-weight: bold; }
+.profile-name { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -app-dark; }
+.field-label { -fx-text-fill: -app-muted; -fx-font-size: 12px; -fx-font-weight: bold; }
+.field-value { -fx-font-size: 15px; }
+.message-success { -fx-text-fill: -app-success; -fx-font-weight: bold; }
+.message-error { -fx-text-fill: -app-danger; -fx-font-weight: bold; }
+.hyperlink { -fx-text-fill: -app-brand; }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+    -fx-background-color: -app-brand;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-cursor: hand;
+}
+.btn-primary:hover { -fx-background-color: #1d4ed8; }
+.btn-primary:disabled { -fx-opacity: 0.5; }
+
+.btn-secondary {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-border-color: -app-brand;
+    -fx-border-radius: 8;
+    -fx-text-fill: -app-brand;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-cursor: hand;
+}
+.btn-secondary:hover { -fx-background-color: -app-light; }
+
+/* ---------- Inputs ---------- */
+.text-field, .password-field {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 8;
+    -fx-padding: 10 12;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.text-field:focused, .password-field:focused { -fx-border-color: -app-brand; }
+
+.text-area {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 8;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.text-area .content { -fx-background-color: white; -fx-background-radius: 8; -fx-padding: 8 10; }
+.text-area:focused { -fx-border-color: -app-brand; }
+
+.combo-box-base {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 8;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.combo-box-base:focused { -fx-border-color: -app-brand; }
+.combo-box .text-field, .date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* ---------- Tables ---------- */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-border-color: -app-border;
+    -fx-border-radius: 8;
+}
+.table-view .column-header-background { -fx-background-color: #f3f5f9; -fx-background-radius: 8 8 0 0; }
+.table-view .column-header, .table-view .filler { -fx-background-color: #f3f5f9; -fx-size: 38; }
+.table-view .column-header .label { -fx-font-weight: bold; -fx-text-fill: -app-muted; }
+.table-row-cell {
+    -fx-cell-size: 42;
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #eef1f6 transparent;
+}
+.table-row-cell:empty { -fx-border-color: transparent; }
+.table-row-cell:selected { -fx-background-color: -app-light; }
+.table-row-cell:selected .table-cell { -fx-text-fill: -app-text; }
+.table-cell { -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 8; }
+
+/* ---------- Header and sidebar ---------- */
+.app-header { -fx-background-color: -app-dark; -fx-padding: 0 24; }
+.app-title { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white; }
+.user-chip { -fx-background-color: rgba(255, 255, 255, 0.15); -fx-background-radius: 20; -fx-padding: 6 14; }
+.user-chip-text { -fx-text-fill: white; }
+
+.sidebar { -fx-background-color: white; -fx-border-color: -app-border; -fx-border-width: 0 1 0 0; -fx-padding: 16 14; }
+.sidebar-caption { -fx-text-fill: -app-muted; -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 4 0 4 8; }
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-fill: -app-text;
+    -fx-padding: 11 16;
+    -fx-cursor: hand;
+}
+.nav-button:hover { -fx-background-color: -app-bg; }
+.nav-button:selected { -fx-background-color: -app-light; -fx-text-fill: -app-brand; -fx-font-weight: bold; }
+
+.nav-logout {
+    -fx-background-color: #fdecea;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+    -fx-text-fill: -app-danger;
+    -fx-font-weight: bold;
+    -fx-padding: 11 16;
+    -fx-cursor: hand;
+}
+.nav-logout:hover { -fx-background-color: #fadbd8; }
+
+/* ---------- Home banner ---------- */
+.welcome-banner {
+    -fx-background-color: linear-gradient(to right, #1e3a5f, #2563eb);
+    -fx-background-radius: 12;
+    -fx-padding: 24 28;
+}
+.banner-title { -fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; }
+.banner-text { -fx-text-fill: white; }
+
+/* ---------- Login branding panel ---------- */
+.brand-panel { -fx-background-color: linear-gradient(to bottom right, #1e3a5f, #2563eb); -fx-padding: 30; }
+.brand-school { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white; }
+.brand-subtitle { -fx-font-size: 14px; -fx-text-fill: rgba(255, 255, 255, 0.85); }
+
+/* ---------- Avatar and badges ---------- */
+.avatar {
+    -fx-background-color: -app-brand;
+    -fx-background-radius: 50;
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-min-width: 70; -fx-min-height: 70;
+    -fx-max-width: 70; -fx-max-height: 70;
+}
+.badge { -fx-background-radius: 12; -fx-padding: 3 12; -fx-font-size: 12px; -fx-font-weight: bold; }
+.badge-success { -fx-background-color: #dcfce7; -fx-text-fill: #15803d; }
+.badge-warning { -fx-background-color: #fef3c7; -fx-text-fill: #b45309; }
+.badge-danger  { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; }
+.badge-info    { -fx-background-color: #dbeafe; -fx-text-fill: #1d4ed8; }

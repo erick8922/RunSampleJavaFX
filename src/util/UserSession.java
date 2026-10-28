@@ -1,8 +1,8 @@
-package ManuelBGuñesSystem;
+package util;
 
 /**
- * Nag-iimbak ng impormasyon ng naka-login na user
- * para magamit sa ibang screens (Admin, Registrar, Student).
+ * Stores the information of the logged-in user so it can be
+ * used by the other screens (Admin, Registrar, Student).
  */
 public class UserSession {
 

@@ -1,5 +1,7 @@
-package ManuelBGuñesSystem;
+package controller;
 
+import config.DBConnection;
+import dao.AuditLogDAO;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -9,16 +11,14 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import util.Navigator;
+import util.PasswordUtil;
 
 public class RegisterController {
 
@@ -83,13 +83,15 @@ public class RegisterController {
                 + " " + lastName
                 + (suffix.isEmpty() ? "" : " " + suffix);
 
-        // --- Save (Users + Students sa isang transaction) ---
+        int newUserId = 0;
+
+        // --- Save (Users + Students in one transaction) ---
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 int roleId = getStudentRoleId(conn);
-                int userId = insertUser(conn, roleId, username, password, fullName, email);
-                insertStudent(conn, userId, studentNo, firstName, middleName, lastName,
+                newUserId = insertUser(conn, roleId, username, password, fullName, email);
+                insertStudent(conn, newUserId, studentNo, firstName, middleName, lastName,
                         suffix, birthDate, gender, address, contactNo);
                 conn.commit();
             } catch (SQLException e) {
@@ -97,6 +99,7 @@ public class RegisterController {
                 throw e;
             }
 
+            AuditLogDAO.log(newUserId, "REGISTER", "users", newUserId);
             showAlert(Alert.AlertType.INFORMATION, "Registration Successful",
                     "Registration successful! You can now log in.");
             handleBack();
@@ -112,7 +115,7 @@ public class RegisterController {
                             "An account with this email address already exists.");
                 } else if (msg.contains("uq_students_student_no")) {
                     showAlert(Alert.AlertType.ERROR, "Student No. Exists",
-                            "Student Number Exists");
+                            "This student number is already registered.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Duplicate", e.getMessage());
                 }
@@ -130,7 +133,7 @@ public class RegisterController {
     // Helpers
     // ---------------------------------------------------------
     private int getStudentRoleId(Connection conn) throws SQLException {
-        String sql = "SELECT role_id FROM Roles WHERE role_name = 'Student'";
+        String sql = "SELECT role_id FROM roles WHERE role_name = 'Student'";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -142,12 +145,12 @@ public class RegisterController {
 
     private int insertUser(Connection conn, int roleId, String username, String password,
                            String fullName, String email) throws Exception {
-        String sql = "INSERT INTO Users (role_id, username, password_hash, full_name, email, status) "
+        String sql = "INSERT INTO users (role_id, username, password_hash, full_name, email, status) "
                    + "VALUES (?, ?, ?, ?, ?, 'active')";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, roleId);
             ps.setString(2, username);
-            ps.setString(3, LoginController.sha256(password));
+            ps.setString(3, PasswordUtil.sha256(password));
             ps.setString(4, fullName);
             ps.setString(5, email);
             ps.executeUpdate();
@@ -164,7 +167,7 @@ public class RegisterController {
                                String middleName, String lastName, String suffix,
                                LocalDate birthDate, String gender, String address,
                                String contactNo) throws SQLException {
-        String sql = "INSERT INTO Students (student_no, first_name, middle_name, last_name, suffix, "
+        String sql = "INSERT INTO students (student_no, first_name, middle_name, last_name, suffix, "
                    + "birth_date, gender, address, contact_no, status, user_id) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -195,17 +198,12 @@ public class RegisterController {
     }
 
     // ---------------------------------------------------------
-    // Bumalik sa Login
+    // Back to the login screen
     // ---------------------------------------------------------
     @FXML
     private void handleBack() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Manuel B. Guiñes System");
-            stage.centerOnScreen();
-            stage.show();
+            Navigator.goTo(registerButton, "/view/Login.fxml", "Login");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Unable to open the Login screen.");

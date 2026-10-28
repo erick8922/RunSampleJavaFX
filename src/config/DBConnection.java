@@ -1,4 +1,4 @@
-package ManuelBGuñesSystem;
+package config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    // XAMPP defaults: user "root", walang password
+    // XAMPP defaults: user "root", empty password
     private static final String URL =
             "jdbc:mysql://localhost:3306/school_system?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";

@@ -1,19 +1,19 @@
-package ManuelBGuñesSystem;
+package controller;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import config.DBConnection;
+import dao.AuditLogDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
+import util.Navigator;
+import util.PasswordUtil;
+import util.UserSession;
 
 public class LoginController {
 
@@ -36,15 +36,19 @@ public class LoginController {
         }
 
         String sql = "SELECT u.user_id, u.full_name, u.status, r.role_name "
-                   + "FROM Users u "
-                   + "JOIN Roles r ON u.role_id = r.role_id "
+                   + "FROM users u "
+                   + "JOIN roles r ON u.role_id = r.role_id "
                    + "WHERE u.username = ? AND u.password_hash = ?";
+
+        int userId = 0;
+        String fullName = null;
+        String role = null;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ps.setString(2, sha256(password));
+            ps.setString(2, PasswordUtil.sha256(password));
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -59,96 +63,84 @@ public class LoginController {
                     return;
                 }
 
-                int userId = rs.getInt("user_id");
-                String fullName = rs.getString("full_name");
-                String role = rs.getString("role_name");
-
-                UserSession.start(userId, fullName, role);
-                writeAuditLog(conn, userId);
-                openDashboard(role);
+                userId = rs.getInt("user_id");
+                fullName = rs.getString("full_name");
+                role = rs.getString("role_name");
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Error",
                     "Unable to connect to the database. Please make sure MySQL is running in XAMPP.\n\n"
                     + e.getMessage());
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Something went wrong: " + e.getMessage());
+            return;
+        }
+
+        UserSession.start(userId, fullName, role);
+        AuditLogDAO.log(userId, "LOGIN", "users", userId);
+        openDashboard(role);
+    }
+
+    // ---------------------------------------------------------
+    // Open the registration form
+    // ---------------------------------------------------------
+    @FXML
+    private void handleRegister() {
+        try {
+            Navigator.goTo(loginButton, "/view/Register.fxml", "Register");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to open the registration form.");
         }
     }
 
     // ---------------------------------------------------------
-    // Buksan ang Registration form
+    // Go to the dashboard that matches the user's role.
+    // Registrar and Admin dashboards are built by the other members:
+    // just add AdminDashboard.fxml / RegistrarDashboard.fxml to the view package.
     // ---------------------------------------------------------
-    @FXML
-    private void handleRegister() throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Register.fxml"));
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Manuel B. Guiñes System - Register");
-        stage.centerOnScreen();
-        stage.show();
-    }
-
-    // ---------------------------------------------------------
-    // Pagpunta sa dashboard ayon sa role
-    // Palitan ang pangalan ng FXML ayon sa totoong files mo.
-    // ---------------------------------------------------------
-    private void openDashboard(String role) throws Exception {
+    private void openDashboard(String role) {
         String fxml;
         String title;
 
         switch (role.toLowerCase()) {
             case "admin":
-                fxml = "AdminDashboard.fxml";
+                fxml = "/view/AdminDashboard.fxml";
                 title = "Admin";
                 break;
             case "registrar":
-                fxml = "RegistrarDashboard.fxml";
+                fxml = "/view/RegistrarDashboard.fxml";
                 title = "Registrar";
                 break;
             case "student":
-                fxml = "StudentDashboard.fxml";
+                fxml = "/view/StudentDashboard.fxml";
                 title = "Student";
                 break;
             default:
+                UserSession.clear();
                 showAlert(Alert.AlertType.ERROR, "Unknown Role",
                         "No dashboard is available for the role: " + role);
                 return;
         }
 
-        Parent root = FXMLLoader.load(getClass().getResource(fxml));
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Manuel B. Guiñes System - " + title);
-        stage.show();
-    }
+        if (getClass().getResource(fxml) == null) {
+            UserSession.clear();
+            showAlert(Alert.AlertType.INFORMATION, "Dashboard Not Available",
+                    "The " + title + " dashboard is not available yet.");
+            return;
+        }
 
-    // ---------------------------------------------------------
-    // Audit log (hindi hihinto ang login kahit mag-fail ito)
-    // ---------------------------------------------------------
-    private void writeAuditLog(Connection conn, int userId) {
-        String sql = "INSERT INTO Audit_Logs (user_id, action, table_name, record_id, status) "
-                   + "VALUES (?, 'LOGIN', 'Users', ?, 'success')";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.setInt(2, userId);
-            ps.executeUpdate();
+        try {
+            Navigator.goTo(loginButton, fxml, title);
         } catch (Exception e) {
             e.printStackTrace();
+            UserSession.clear();
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to open the dashboard.\n\n" + e.getMessage());
         }
-    }
-
-    // ---------------------------------------------------------
-    // SHA-256 (tugma sa SHA2(..., 256) ng MySQL)
-    // ---------------------------------------------------------
-    public static String sha256(String text) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] hash = md.digest(text.getBytes(StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hash) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
