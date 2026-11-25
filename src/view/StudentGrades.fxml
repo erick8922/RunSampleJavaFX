@@ -1,42 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GradesController">
-    <padding>
-        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-    </padding>
+<VBox spacing="20.0" styleClass="page-pad"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.GradesController">
 
-    <Label styleClass="page-title" text="My Grades" />
-    <Label styleClass="page-subtitle" text="Your grades per subject and grading period." />
+    <Label styleClass="page-title" text="Report Cards" />
+    <Label styleClass="page-subtitle" text="Choose a school year to see your grades." wrapText="true" />
 
-    <VBox styleClass="card" VBox.vgrow="ALWAYS">
-        <TableView fx:id="gradesTable" minHeight="220.0" VBox.vgrow="ALWAYS">
+    <!-- SCHOOL YEAR PICKER -->
+    <VBox spacing="8.0" styleClass="card">
+        <Label styleClass="field-label" text="Which school year do you want to see?" />
+        <ComboBox fx:id="schoolYearCombo" maxWidth="420.0" prefWidth="420.0" promptText="Tap here to choose" />
+    </VBox>
+
+    <!-- REPORT CARD -->
+    <VBox spacing="18.0" styleClass="card" VBox.vgrow="ALWAYS">
+
+        <VBox alignment="TOP_CENTER" spacing="4.0">
+            <Label styleClass="report-heading-small" text="REPUBLIC OF THE PHILIPPINES" />
+            <Label styleClass="report-heading" text="DEPARTMENT OF EDUCATION" />
+            <Label styleClass="report-heading-main" text="LEARNER'S PROGRESS REPORT CARD" textAlignment="CENTER" wrapText="true" />
+        </VBox>
+
+        <!-- STUDENT INFORMATION (wraps on small windows) -->
+        <FlowPane hgap="40.0" vgap="12.0">
+            <HBox minWidth="300.0" spacing="8.0">
+                <Label styleClass="report-key" text="Name:" />
+                <Label fx:id="studentNameLabel" text="-" wrapText="true" />
+            </HBox>
+            <HBox minWidth="300.0" spacing="8.0">
+                <Label styleClass="report-key" text="LRN:" />
+                <Label fx:id="studentNumberLabel" text="-" wrapText="true" />
+            </HBox>
+            <HBox minWidth="300.0" spacing="8.0">
+                <Label styleClass="report-key" text="Grade and section:" />
+                <Label fx:id="gradeSectionLabel" text="-" wrapText="true" />
+            </HBox>
+            <HBox minWidth="300.0" spacing="8.0">
+                <Label styleClass="report-key" text="School year:" />
+                <Label fx:id="schoolYearLabel" text="-" wrapText="true" />
+            </HBox>
+        </FlowPane>
+
+        <!-- QUARTERLY GRADES -->
+        <TableView fx:id="gradesTable" minHeight="280.0" prefHeight="380.0" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn prefWidth="100.0" text="Code">
-                    <cellValueFactory><PropertyValueFactory property="subjectCode" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="220.0" text="Subject">
-                    <cellValueFactory><PropertyValueFactory property="subjectName" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="110.0" text="School Year">
-                    <cellValueFactory><PropertyValueFactory property="schoolYear" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="120.0" text="Period">
-                    <cellValueFactory><PropertyValueFactory property="gradingPeriod" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="80.0" text="Grade">
-                    <cellValueFactory><PropertyValueFactory property="grade" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="remarksColumn" prefWidth="100.0" text="Remarks">
-                    <cellValueFactory><PropertyValueFactory property="remarks" /></cellValueFactory>
-                </TableColumn>
+                <TableColumn fx:id="subjectColumn" minWidth="165.0" prefWidth="220.0" text="Subject" />
+                <TableColumn fx:id="firstQuarterColumn" minWidth="52.0" prefWidth="70.0" text="1st" />
+                <TableColumn fx:id="secondQuarterColumn" minWidth="52.0" prefWidth="70.0" text="2nd" />
+                <TableColumn fx:id="thirdQuarterColumn" minWidth="52.0" prefWidth="70.0" text="3rd" />
+                <TableColumn fx:id="fourthQuarterColumn" minWidth="52.0" prefWidth="70.0" text="4th" />
+                <TableColumn fx:id="finalGradeColumn" minWidth="60.0" prefWidth="80.0" text="Final" />
+                <TableColumn fx:id="remarksColumn" minWidth="82.0" prefWidth="110.0" text="Remarks" />
             </columns>
         </TableView>
+
+        <!-- GENERAL AVERAGE -->
+        <FlowPane alignment="CENTER_RIGHT" hgap="30.0" vgap="8.0">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="report-key" text="General average:" />
+                <Label fx:id="generalAverageLabel" styleClass="report-total" text="-" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="report-key" text="Overall result:" />
+                <Label fx:id="overallRemarksLabel" style="-fx-font-weight: bold;" text="INCOMPLETE GRADES" />
+            </HBox>
+        </FlowPane>
+
+        <HBox styleClass="info-box">
+            <Label styleClass="report-note" text="A grade of 75 or higher means you passed." wrapText="true" />
+        </HBox>
+
     </VBox>
+
 </VBox>

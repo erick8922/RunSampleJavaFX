@@ -30,7 +30,11 @@ public class Navigator {
         }
         Parent root = FXMLLoader.load(location);
         Stage stage = (Stage) source.getScene().getWindow();
+        ResponsiveFont.bind(root);
+        ResponsiveForm.fit(root);
         stage.setScene(new Scene(root));
+        stage.setMinWidth(320);
+        stage.setMinHeight(480);
         stage.setTitle(title == null || title.isEmpty() ? APP_TITLE : APP_TITLE + " - " + title);
         stage.sizeToScene();
         stage.centerOnScreen();

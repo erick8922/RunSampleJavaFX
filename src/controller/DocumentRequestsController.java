@@ -23,6 +23,9 @@ public class DocumentRequestsController {
     @FXML private Label messageLabel;
     @FXML private TableView<DocumentRequest> requestsTable;
     @FXML private TableColumn<DocumentRequest, String> statusColumn;
+    @FXML private TableColumn<DocumentRequest, String> documentColumn;
+    @FXML private TableColumn<DocumentRequest, String> purposeColumn;
+    @FXML private TableColumn<DocumentRequest, String> requestedAtColumn;
 
     private final DocumentRequestDAO requestDAO = new DocumentRequestDAO();
     private int studentId = -1;
@@ -32,6 +35,9 @@ public class DocumentRequestsController {
         requestsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         requestsTable.setPlaceholder(new Label("You have not submitted any requests yet."));
         StatusBadge.setup(statusColumn);
+        util.WrapCells.apply(documentColumn);
+        util.WrapCells.apply(purposeColumn);
+        util.WrapCells.apply(requestedAtColumn);
 
         try {
             studentId = new StudentDAO().findStudentIdByUserId(UserSession.getUserId());

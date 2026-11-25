@@ -1,6 +1,7 @@
 package dao;
 
 import config.DBConnection;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,16 +13,25 @@ import util.Formats;
 
 public class GradeDAO {
 
-    /** Returns all grades of a student, newest school year first, in grading period order. */
-    public List<Grade> findByStudentId(int studentId) throws SQLException {
+    /**
+     * Returns all grades of a student,
+     * newest school year first, in quarter order.
+     */
+    public List<Grade> findByStudentId(int studentId)
+            throws SQLException {
+
         String sql = "SELECT sub.subject_code, sub.subject_name, es.school_year, "
                    + "g.grading_period, g.grade, g.remarks "
                    + "FROM grades g "
-                   + "JOIN enrollment_subject es ON g.enrollment_subject_id = es.enrollment_subject_id "
-                   + "JOIN subject sub ON es.subject_id = sub.subject_id "
+                   + "JOIN enrollment_subject es "
+                   + "ON g.enrollment_subject_id = es.enrollment_subject_id "
+                   + "JOIN subject sub "
+                   + "ON es.subject_id = sub.subject_id "
                    + "WHERE es.student_id = ? "
                    + "ORDER BY es.school_year DESC, sub.subject_name, "
-                   + "FIELD(g.grading_period, 'Prelim', 'Midterm', 'Pre-Final', 'Final')";
+                   + "FIELD(g.grading_period, "
+                   + "'1st Quarter', '2nd Quarter', "
+                   + "'3rd Quarter', '4th Quarter')";
 
         List<Grade> list = new ArrayList<>();
 
@@ -31,17 +41,24 @@ public class GradeDAO {
             ps.setInt(1, studentId);
 
             try (ResultSet rs = ps.executeQuery()) {
+
                 while (rs.next()) {
+
+                    BigDecimal g = rs.getBigDecimal("grade");
+
                     list.add(new Grade(
                             Formats.text(rs.getString("subject_code")),
                             Formats.text(rs.getString("subject_name")),
                             Formats.text(rs.getString("school_year")),
                             Formats.text(rs.getString("grading_period")),
-                            Formats.text(rs.getString("grade")),
-                            rs.getString("remarks")));
+                            g == null ? "-" :
+                                    g.stripTrailingZeros().toPlainString(),
+                            rs.getString("remarks")
+                    ));
                 }
             }
         }
+
         return list;
     }
 }

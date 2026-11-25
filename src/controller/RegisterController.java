@@ -10,19 +10,34 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.util.StringConverter;
 import util.Navigator;
 import util.PasswordUtil;
 
 public class RegisterController {
 
-    @FXML private TextField studentNoField;
+    @FXML private TextField studentNoField;      // now holds the 12-digit LRN
     @FXML private TextField firstNameField;
     @FXML private TextField middleNameField;
     @FXML private TextField lastNameField;
@@ -38,43 +53,244 @@ public class RegisterController {
     @FXML private Button registerButton;
 
     // ---------------------------------------------------------
+    // Validation rules
+    // ---------------------------------------------------------
+    private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("MM/dd/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
+    // letters, with optional single space / hyphen / apostrophe between words, optional trailing period (Ma., Jr.)
+    private static final Pattern NAME_PATTERN =
+            Pattern.compile("^\\p{L}+\\.?([ '\\-]\\p{L}+\\.?)*$");
+    private static final Pattern REPEATED_LETTER = Pattern.compile("(?i)(\\p{L})\\1\\1");
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9\\-]+(\\.[A-Za-z0-9\\-]+)*\\.[A-Za-z]{2,}$");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{3,19}$");
+
+    private static final int MIN_AGE = 10;
+    private static final int MAX_AGE = 30;
+
+    private static final Map<String, String> SUFFIXES = new HashMap<>();
+    static {
+        SUFFIXES.put("jr", "Jr.");
+        SUFFIXES.put("sr", "Sr.");
+        SUFFIXES.put("ii", "II");
+        SUFFIXES.put("iii", "III");
+        SUFFIXES.put("iv", "IV");
+        SUFFIXES.put("v", "V");
+    }
+
+    // ---------------------------------------------------------
+    // Setup: block wrong characters while typing + guide hints
+    // ---------------------------------------------------------
+    @FXML
+    public void initialize() {
+        // LRN and contact number: digits only, hard limit on length
+        studentNoField.setTextFormatter(new TextFormatter<String>(digitsOnly(12)));
+        contactNoField.setTextFormatter(new TextFormatter<String>(digitsOnly(11)));
+
+        // Names: letters, space, hyphen, apostrophe and period only
+        firstNameField.setTextFormatter(new TextFormatter<String>(nameChars(50)));
+        middleNameField.setTextFormatter(new TextFormatter<String>(nameChars(50)));
+        lastNameField.setTextFormatter(new TextFormatter<String>(nameChars(50)));
+        suffixField.setTextFormatter(new TextFormatter<String>(nameChars(4)));
+
+        // No spaces allowed in username / password / email
+        usernameField.setTextFormatter(new TextFormatter<String>(noSpaces(20)));
+        emailField.setTextFormatter(new TextFormatter<String>(noSpaces(150)));
+        passwordField.setTextFormatter(new TextFormatter<String>(noSpaces(50)));
+        confirmPasswordField.setTextFormatter(new TextFormatter<String>(noSpaces(50)));
+
+        // Birth date: fixed format, and future dates cannot be picked
+        birthDatePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override public String toString(LocalDate d) {
+                return d == null ? "" : DATE_FMT.format(d);
+            }
+            @Override public LocalDate fromString(String s) {
+                try {
+                    return (s == null || s.trim().isEmpty()) ? null : LocalDate.parse(s.trim(), DATE_FMT);
+                } catch (DateTimeParseException e) {
+                    return null;
+                }
+            }
+        });
+        birthDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null && item.isAfter(LocalDate.now())) {
+                    setDisable(true);
+                }
+            }
+        });
+
+        if (genderCombo.getItems().isEmpty()) {
+            genderCombo.getItems().setAll("Male", "Female");
+        }
+
+        // Hints
+        studentNoField.setPromptText("12-digit LRN (e.g., 305012010037)");
+        firstNameField.setPromptText("e.g., Maria Clara");
+        middleNameField.setPromptText("Leave blank if none");
+        lastNameField.setPromptText("e.g., Dela Cruz");
+        suffixField.setPromptText("Jr., Sr., II, III (optional)");
+        birthDatePicker.getEditor().setPromptText("MM/DD/YYYY");
+        contactNoField.setPromptText("11 digits, e.g., 09171234567");
+        addressField.setPromptText("Purok/Street, Barangay, City/Municipality, Province");
+        emailField.setPromptText("e.g., juan.delacruz@gmail.com");
+        usernameField.setPromptText("4-20 letters, numbers or _");
+        passwordField.setPromptText("At least 8 characters, with letters and numbers");
+    }
+
+    private UnaryOperator<TextFormatter.Change> digitsOnly(int max) {
+        return ch -> {
+            if (!ch.isContentChange()) return ch;
+            ch.setText(ch.getText().replaceAll("\\D", ""));      // pasted "0917-123 4567" becomes digits only
+            return ch.getControlNewText().length() <= max ? ch : null;
+        };
+    }
+
+    private UnaryOperator<TextFormatter.Change> nameChars(int max) {
+        return ch -> {
+            if (!ch.isContentChange()) return ch;
+            ch.setText(ch.getText().replaceAll("[^\\p{L} .'\\-]", ""));
+            return ch.getControlNewText().length() <= max ? ch : null;
+        };
+    }
+
+    private UnaryOperator<TextFormatter.Change> noSpaces(int max) {
+        return ch -> {
+            if (!ch.isContentChange()) return ch;
+            ch.setText(ch.getText().replaceAll("\\s", ""));
+            return ch.getControlNewText().length() <= max ? ch : null;
+        };
+    }
+
+    // ---------------------------------------------------------
     // REGISTER
     // ---------------------------------------------------------
     @FXML
     private void handleRegister() {
+        List<String> errors = new ArrayList<>();
+        List<Control> invalid = new ArrayList<>();
+
+        // ----- LRN -----
         String studentNo = studentNoField.getText().trim();
-        String firstName = firstNameField.getText().trim();
-        String middleName = middleNameField.getText().trim();
-        String lastName = lastNameField.getText().trim();
-        String suffix = suffixField.getText().trim();
-        LocalDate birthDate = birthDatePicker.getValue();
+        if (studentNo.isEmpty()) {
+            fail(errors, invalid, studentNoField, "LRN is required. It is the 12-digit number on your report card (Form 138).");
+        } else if (!studentNo.matches("\\d{12}")) {
+            fail(errors, invalid, studentNoField, "LRN must be exactly 12 digits (numbers only). You typed " + studentNo.length() + " digit(s).");
+        } else if (studentNo.matches("(\\d)\\1{11}")) {
+            fail(errors, invalid, studentNoField, "LRN cannot be the same digit repeated 12 times. Please copy it from your report card.");
+        }
+
+        // ----- Names -----
+        String firstName = checkName("First name", firstNameField, true, errors, invalid);
+        String middleName = checkName("Middle name", middleNameField, false, errors, invalid);
+        String lastName = checkName("Last name", lastNameField, true, errors, invalid);
+
+        // ----- Suffix -----
+        String suffix = "";
+        String rawSuffix = suffixField.getText().trim();
+        if (!rawSuffix.isEmpty()) {
+            String key = rawSuffix.replace(".", "").toLowerCase();
+            suffix = SUFFIXES.get(key);
+            if (suffix == null) {
+                suffix = "";
+                fail(errors, invalid, suffixField, "Suffix must be one of: Jr., Sr., II, III, IV, V. Leave it blank if you have none.");
+            }
+        }
+
+        // ----- Birth date -----
+        LocalDate birthDate = null;
+        String dateText = birthDatePicker.getEditor().getText() == null ? "" : birthDatePicker.getEditor().getText().trim();
+        if (dateText.isEmpty()) {
+            fail(errors, invalid, birthDatePicker, "Birth date is required. Use the format MM/DD/YYYY (e.g., 06/15/2011).");
+        } else {
+            try {
+                birthDate = LocalDate.parse(dateText, DATE_FMT);
+            } catch (DateTimeParseException e) {
+                fail(errors, invalid, birthDatePicker, "Birth date is not a valid date. Use the format MM/DD/YYYY (e.g., 06/15/2011).");
+            }
+        }
+        if (birthDate != null) {
+            LocalDate today = LocalDate.now();
+            if (birthDate.isAfter(today)) {
+                fail(errors, invalid, birthDatePicker, "Birth date cannot be in the future.");
+                birthDate = null;
+            } else {
+                int age = Period.between(birthDate, today).getYears();
+                if (age < MIN_AGE || age > MAX_AGE) {
+                    fail(errors, invalid, birthDatePicker, "The birth date gives an age of " + age
+                            + ". Please check the year (accepted age is " + MIN_AGE + " to " + MAX_AGE + ").");
+                    birthDate = null;
+                }
+            }
+        }
+
+        // ----- Gender -----
         String gender = genderCombo.getValue();
+        if (gender == null || gender.trim().isEmpty()) {
+            fail(errors, invalid, genderCombo, "Please select your gender.");
+        }
+
+        // ----- Contact number (optional, but must be valid when filled) -----
         String contactNo = contactNoField.getText().trim();
-        String address = addressField.getText().trim();
-        String email = emailField.getText().trim();
+        if (!contactNo.isEmpty() && !contactNo.matches("09\\d{9}")) {
+            fail(errors, invalid, contactNoField,
+                    "Contact number must be 11 digits and start with 09 (e.g., 09171234567).");
+        }
+
+        // ----- Address (optional, but must look like an address when filled) -----
+        String address = addressField.getText().trim().replaceAll("\\s+", " ");
+        if (!address.isEmpty()) {
+            if (address.length() < 8 || !address.matches(".*\\p{L}.*")) {
+                fail(errors, invalid, addressField,
+                        "Address is too short. Please include Purok/Street, Barangay, City/Municipality and Province.");
+            } else if (address.length() > 255) {
+                fail(errors, invalid, addressField, "Address is too long (maximum 255 characters).");
+            }
+        }
+
+        // ----- Email -----
+        String email = emailField.getText().trim().toLowerCase();
+        if (email.isEmpty()) {
+            fail(errors, invalid, emailField, "Email is required (e.g., juan.delacruz@gmail.com).");
+        } else if (!EMAIL_PATTERN.matcher(email).matches() || email.contains("..")) {
+            fail(errors, invalid, emailField,
+                    "Email is not valid. It must look like name@example.com (no spaces, with @ and a domain such as .com).");
+        }
+
+        // ----- Username -----
         String username = usernameField.getText().trim();
+        if (username.isEmpty()) {
+            fail(errors, invalid, usernameField, "Username is required.");
+        } else if (!USERNAME_PATTERN.matcher(username).matches()) {
+            fail(errors, invalid, usernameField,
+                    "Username must be 4 to 20 characters, start with a letter, and contain only letters, numbers or underscore (_). No spaces.");
+        }
+
+        // ----- Password -----
         String password = passwordField.getText();
         String confirm = confirmPasswordField.getText();
+        if (password.isEmpty()) {
+            fail(errors, invalid, passwordField, "Password is required.");
+        } else if (password.length() < 8) {
+            fail(errors, invalid, passwordField, "Password is too short. Use at least 8 characters.");
+        } else if (!password.matches(".*\\p{L}.*") || !password.matches(".*\\d.*")) {
+            fail(errors, invalid, passwordField, "Password must contain at least one letter and one number (e.g., Study2026).");
+        } else if (password.equalsIgnoreCase(username) || password.equals(studentNo)) {
+            fail(errors, invalid, passwordField, "Password must not be the same as your username or LRN.");
+        } else if (!password.equals(confirm)) {
+            fail(errors, invalid, confirmPasswordField, "Password and Confirm Password do not match. Please type them again.");
+        }
 
-        // --- Validation ---
-        if (studentNo.isEmpty() || firstName.isEmpty() || lastName.isEmpty()
-                || email.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Missing Information",
-                    "Please fill in all fields marked with an asterisk (*).");
-            return;
-        }
-        if (!email.contains("@") || !email.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Invalid Email", "Please enter a valid email address.");
-            return;
-        }
-        if (password.length() < 6) {
-            showAlert(Alert.AlertType.WARNING, "Weak Password",
-                    "The password must be at least 6 characters long.");
-            return;
-        }
-        if (!password.equals(confirm)) {
-            showAlert(Alert.AlertType.WARNING, "Passwords Do Not Match",
-                    "The password and confirm password do not match.");
+        // ----- Show every problem at once -----
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Please fix the following before registering:\n");
+            for (String e : errors) {
+                sb.append("\n\u2022 ").append(e);
+            }
+            showAlert(Alert.AlertType.WARNING, "Please Check Your Information", sb.toString());
+            invalid.get(0).requestFocus();
             return;
         }
 
@@ -82,6 +298,11 @@ public class RegisterController {
                 + (middleName.isEmpty() ? "" : " " + middleName)
                 + " " + lastName
                 + (suffix.isEmpty() ? "" : " " + suffix);
+        if (fullName.length() > 150) {
+            showAlert(Alert.AlertType.WARNING, "Name Too Long",
+                    "Your full name is too long (maximum 150 characters). Please shorten it.");
+            return;
+        }
 
         int newUserId = 0;
 
@@ -114,8 +335,8 @@ public class RegisterController {
                     showAlert(Alert.AlertType.ERROR, "Email Already Registered",
                             "An account with this email address already exists.");
                 } else if (msg.contains("uq_students_student_no")) {
-                    showAlert(Alert.AlertType.ERROR, "Student No. Exists",
-                            "This student number is already registered.");
+                    showAlert(Alert.AlertType.ERROR, "LRN Already Registered",
+                            "This LRN is already registered. If you did not register it, please contact the registrar.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Duplicate", e.getMessage());
                 }
@@ -130,7 +351,57 @@ public class RegisterController {
     }
 
     // ---------------------------------------------------------
-    // Helpers
+    // Validation helpers
+    // ---------------------------------------------------------
+    private void fail(List<String> errors, List<Control> invalid, Control field, String message) {
+        errors.add(message);
+        invalid.add(field);
+    }
+
+    /** Validates a name, returns it cleaned (extra spaces removed, proper capitalization). */
+    private String checkName(String label, TextField field, boolean required,
+                             List<String> errors, List<Control> invalid) {
+        String value = field.getText().trim().replaceAll("\\s+", " ");
+        if (value.isEmpty()) {
+            if (required) {
+                fail(errors, invalid, field, label + " is required.");
+            }
+            return "";
+        }
+        if (value.length() < 2 || value.length() > 50) {
+            fail(errors, invalid, field, label + " must be 2 to 50 characters long.");
+            return "";
+        }
+        if (!NAME_PATTERN.matcher(value).matches()) {
+            fail(errors, invalid, field, label + " must contain letters only (a space, hyphen, apostrophe or period between words is allowed). Numbers and symbols are not allowed.");
+            return "";
+        }
+        if (REPEATED_LETTER.matcher(value).find()) {
+            fail(errors, invalid, field, label + " looks incorrect (the same letter appears 3 times in a row). Please check the spelling.");
+            return "";
+        }
+        return toTitleCase(value);
+    }
+
+    private String toTitleCase(String s) {
+        StringBuilder sb = new StringBuilder();
+        boolean capitalizeNext = true;
+        for (char c : s.toLowerCase().toCharArray()) {
+            if (capitalizeNext && Character.isLetter(c)) {
+                sb.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                sb.append(c);
+            }
+            if (c == ' ' || c == '-' || c == '\'' || c == '.') {
+                capitalizeNext = true;
+            }
+        }
+        return sb.toString();
+    }
+
+    // ---------------------------------------------------------
+    // Database helpers
     // ---------------------------------------------------------
     private int getStudentRoleId(Connection conn) throws SQLException {
         String sql = "SELECT role_id FROM roles WHERE role_name = 'Student'";

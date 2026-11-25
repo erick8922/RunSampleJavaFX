@@ -14,7 +14,8 @@ public class CredentialDAO {
 
     public List<Credential> findByStudentId(int studentId) throws SQLException {
         String sql = "SELECT credential_type, issue_date, status "
-                   + "FROM credentials WHERE student_id = ? ORDER BY issue_date DESC";
+                   + "FROM credentials WHERE student_id = ? AND LOWER(status) <> 'expired' "
+                   + "ORDER BY issue_date DESC";
 
         List<Credential> list = new ArrayList<>();
 

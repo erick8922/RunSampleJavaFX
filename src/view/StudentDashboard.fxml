@@ -11,41 +11,96 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="640.0" prefWidth="1000.0" styleClass="page" stylesheets="@app.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StudentDashboardController">
+<BorderPane fx:id="rootPane"
+            minHeight="480.0"
+            minWidth="320.0"
+            prefHeight="680.0"
+            prefWidth="1100.0"
+            styleClass="page"
+            stylesheets="@app.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.StudentDashboardController">
 
+    <!-- TOP HEADER -->
     <top>
-        <HBox alignment="CENTER_LEFT" prefHeight="64.0" styleClass="app-header">
-            <Label styleClass="app-title" text="Student Information System" />
+        <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="app-header">
+            <VBox alignment="CENTER_LEFT" spacing="1.0">
+                <Label fx:id="appTitleLabel" styleClass="app-title" text="Student Portal" />
+                <Label fx:id="appSubtitleLabel" styleClass="app-subtitle" text="Manuel B. Guiñez Sr. National High School" />
+            </VBox>
+
             <Region HBox.hgrow="ALWAYS" />
+
             <HBox alignment="CENTER" styleClass="user-chip">
-                <Label fx:id="userLabel" styleClass="user-chip-text" text="Student" />
+                <Label fx:id="userLabel" maxWidth="240.0" styleClass="user-chip-text" text="Student" wrapText="true" />
             </HBox>
         </HBox>
     </top>
 
+    <!-- LEFT SIDEBAR -->
     <left>
-        <VBox prefWidth="220.0" spacing="6.0" styleClass="sidebar">
+        <VBox fx:id="sidebar" spacing="8.0" styleClass="sidebar">
+
             <fx:define>
                 <ToggleGroup fx:id="navGroup" />
             </fx:define>
 
-            <Label styleClass="sidebar-caption" text="MENU" />
-            <ToggleButton fx:id="homeButton" maxWidth="Infinity" onAction="#showHome" selected="true" styleClass="nav-button" text="Home" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="profileButton" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-button" text="My Profile" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="subjectsButton" maxWidth="Infinity" onAction="#showSubjects" styleClass="nav-button" text="My Subjects" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="gradesButton" maxWidth="Infinity" onAction="#showGrades" styleClass="nav-button" text="My Grades" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="transcriptButton" maxWidth="Infinity" onAction="#showTranscript" styleClass="nav-button" text="Transcript" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="credentialsButton" maxWidth="Infinity" onAction="#showCredentials" styleClass="nav-button" text="Credentials" toggleGroup="$navGroup" />
-            <ToggleButton fx:id="requestsButton" maxWidth="Infinity" onAction="#showDocumentRequests" styleClass="nav-button" text="Document Requests" toggleGroup="$navGroup" />
+            <Label fx:id="menuCaption" styleClass="sidebar-caption" text="MENU" />
+
+            <ToggleButton fx:id="homeButton"
+                          maxWidth="Infinity"
+                          onAction="#showHome"
+                          selected="true"
+                          styleClass="nav-button"
+                          text="🏠  Home"
+                          toggleGroup="$navGroup" />
+
+            <ToggleButton fx:id="profileButton"
+                          maxWidth="Infinity"
+                          onAction="#showProfile"
+                          styleClass="nav-button"
+                          text="👤  My Profile"
+                          toggleGroup="$navGroup" />
+
+            <ToggleButton fx:id="gradesButton"
+                          maxWidth="Infinity"
+                          onAction="#showGrades"
+                          styleClass="nav-button"
+                          text="📊  Report Cards"
+                          toggleGroup="$navGroup" />
+
+            <ToggleButton fx:id="credentialsButton"
+                          maxWidth="Infinity"
+                          onAction="#showCredentials"
+                          styleClass="nav-button"
+                          text="🎓  Credentials"
+                          toggleGroup="$navGroup" />
+
+            <ToggleButton fx:id="requestsButton"
+                          maxWidth="Infinity"
+                          onAction="#showDocumentRequests"
+                          styleClass="nav-button"
+                          text="📄  Document Request"
+                          toggleGroup="$navGroup" />
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <Button maxWidth="Infinity" onAction="#handleLogout" styleClass="nav-logout" text="Log Out" />
+            <Button fx:id="logoutButton"
+                    maxWidth="Infinity"
+                    onAction="#handleLogout"
+                    styleClass="nav-logout"
+                    text="🚪  Log Out" />
         </VBox>
     </left>
 
+    <!-- MAIN CONTENT -->
     <center>
-        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll">
+        <ScrollPane fitToHeight="true"
+                    fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    styleClass="content-scroll">
+
             <StackPane fx:id="contentArea" alignment="TOP_LEFT" />
         </ScrollPane>
     </center>

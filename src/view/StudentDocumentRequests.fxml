@@ -13,55 +13,53 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DocumentRequestsController">
-    <padding>
-        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-    </padding>
+<VBox spacing="20.0" styleClass="page-pad" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DocumentRequestsController">
 
-    <Label styleClass="page-title" text="Document Requests" />
-    <Label styleClass="page-subtitle" text="Request school documents and track the status of your requests." />
+    <Label styleClass="page-title" text="Document Request" />
+    <Label styleClass="page-subtitle" text="Ask the school for a document here. You can also see if your request is already approved." wrapText="true" />
 
     <!-- New request -->
     <VBox spacing="10.0" styleClass="card">
-        <Label styleClass="section-title" text="New Request" />
+        <Label styleClass="section-title" text="Make a new request" />
 
-        <Label styleClass="field-label" text="DOCUMENT TYPE" />
-        <ComboBox fx:id="documentTypeCombo" maxWidth="Infinity" promptText="Select a document">
+        <Label styleClass="field-label" text="Step 1: Which document do you need?" />
+        <ComboBox fx:id="documentTypeCombo" maxWidth="Infinity" promptText="Tap here to choose a document">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Certificate of Enrollment" />
-                    <String fx:value="Transcript of Records" />
+                    <String fx:value="Form 137 (Permanent Record)" />
+                    <String fx:value="Report Card (Form 138)" />
+                    <String fx:value="Certification of Grades" />
                     <String fx:value="Good Moral" />
-                    <String fx:value="Diploma Copy" />
-                    <String fx:value="Certificate of Grades" />
+                    <String fx:value="Senior High School Diploma" />
                 </FXCollections>
             </items>
         </ComboBox>
 
-        <Label styleClass="field-label" text="PURPOSE" />
-        <TextArea fx:id="purposeArea" prefRowCount="3" promptText="Why do you need this document? (e.g. scholarship application, transfer to another school)" wrapText="true" />
+        <Label styleClass="field-label" text="Step 2: Why do you need it?" />
+        <TextArea fx:id="purposeArea" prefRowCount="3" promptText="Example: For a scholarship application, or for transferring to another school" wrapText="true" />
 
-        <HBox alignment="CENTER_LEFT" spacing="14.0">
-            <Button fx:id="submitButton" onAction="#handleSubmit" styleClass="btn-primary" text="Submit Request" />
-            <Label fx:id="messageLabel" />
+        <HBox alignment="CENTER_LEFT" spacing="16.0">
+            <Button fx:id="submitButton" onAction="#handleSubmit" styleClass="btn-primary" text="Send Request" />
+            <Label fx:id="messageLabel" wrapText="true" HBox.hgrow="ALWAYS" />
         </HBox>
     </VBox>
 
     <!-- History -->
     <VBox spacing="12.0" styleClass="card" VBox.vgrow="ALWAYS">
-        <Label styleClass="section-title" text="My Requests" />
-        <TableView fx:id="requestsTable" minHeight="180.0" VBox.vgrow="ALWAYS">
+        <Label styleClass="section-title" text="My requests" />
+        <TableView fx:id="requestsTable" minHeight="220.0" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn prefWidth="200.0" text="Document">
+                <TableColumn fx:id="documentColumn" minWidth="150.0" prefWidth="200.0" text="Document">
                     <cellValueFactory><PropertyValueFactory property="documentType" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="240.0" text="Purpose">
+                <TableColumn fx:id="purposeColumn" minWidth="180.0" prefWidth="240.0" text="Reason">
                     <cellValueFactory><PropertyValueFactory property="purpose" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="statusColumn" prefWidth="110.0" text="Status">
+                <TableColumn fx:id="statusColumn" minWidth="90.0" prefWidth="120.0" text="Status">
                     <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="170.0" text="Requested On">
+                <TableColumn fx:id="requestedAtColumn" minWidth="135.0" prefWidth="180.0" text="Date requested">
                     <cellValueFactory><PropertyValueFactory property="requestedAt" /></cellValueFactory>
                 </TableColumn>
             </columns>

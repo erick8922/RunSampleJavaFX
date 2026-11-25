@@ -64,6 +64,35 @@ public class StudentDAO {
         }
     }
 
+    /** Latest enrollment of a student as {"Grade 11 - Jacinto (ABM)", "2026-2027"}, or null if none. */
+    public String[] findCurrentEnrollment(int studentId) throws SQLException {
+        String sql = "SELECT es.school_year, es.grade_level, sec.section_name, sec.strand "
+                   + "FROM enrollment_subject es "
+                   + "LEFT JOIN section sec ON es.section_id = sec.section_id "
+                   + "WHERE es.student_id = ? "
+                   + "ORDER BY (es.status = 'active') DESC, es.school_year DESC, es.enrollment_date DESC "
+                   + "LIMIT 1";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, studentId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                String section = rs.getString("section_name");
+                String strand = rs.getString("strand");
+                String gradeSection = section == null ? rs.getString("grade_level") : section;
+                if (gradeSection != null && strand != null && !strand.isEmpty()) {
+                    gradeSection += " (" + strand + ")";
+                }
+                return new String[] { gradeSection, rs.getString("school_year") };
+            }
+        }
+    }
+
     /** Updates the contact number and address of a student. Empty values are saved as NULL. */
     public void updateContactInfo(int studentId, String contactNo, String address) throws SQLException {
         String sql = "UPDATE students SET contact_no = ?, address = ?, updated_at = NOW() "

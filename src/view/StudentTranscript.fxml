@@ -7,27 +7,24 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TranscriptController">
-    <padding>
-        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-    </padding>
+<VBox spacing="18.0" styleClass="page-pad" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TranscriptController">
 
-    <Label styleClass="page-title" text="Transcript" />
-    <Label styleClass="page-subtitle" text="Your transcript records issued by the school." />
+    <Label styleClass="page-title" text="Permanent Record (Form 137)" />
+    <Label styleClass="page-subtitle" text="Copies of your Form 137 (permanent record) issued by the school." />
 
     <VBox styleClass="card" VBox.vgrow="ALWAYS">
         <TableView fx:id="transcriptTable" minHeight="220.0" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn prefWidth="130.0" text="School Year">
+                <TableColumn minWidth="97.0" prefWidth="130.0" text="School Year">
                     <cellValueFactory><PropertyValueFactory property="schoolYear" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="140.0" text="Issue Date">
+                <TableColumn minWidth="105.0" prefWidth="140.0" text="Issue Date">
                     <cellValueFactory><PropertyValueFactory property="issueDate" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="260.0" text="Remarks">
+                <TableColumn minWidth="195.0" prefWidth="260.0" text="Remarks">
                     <cellValueFactory><PropertyValueFactory property="remarks" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="statusColumn" prefWidth="110.0" text="Status">
+                <TableColumn fx:id="statusColumn" minWidth="82.0" prefWidth="110.0" text="Status">
                     <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
                 </TableColumn>
             </columns>

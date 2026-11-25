@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import model.Student;
 import util.Formats;
 import util.StatusBadge;
@@ -20,6 +21,8 @@ public class ProfileController {
     @FXML private Label statusBadge;
     @FXML private Label genderValue;
     @FXML private Label birthDateValue;
+    @FXML private Label gradeSectionValue;
+    @FXML private Label schoolYearValue;
     @FXML private Label emailValue;
     @FXML private Label usernameValue;
     @FXML private TextField contactNoField;
@@ -32,6 +35,13 @@ public class ProfileController {
 
     @FXML
     private void initialize() {
+        // Contact number: digits only, maximum of 11
+        contactNoField.setTextFormatter(new TextFormatter<String>(ch -> {
+            if (!ch.isContentChange()) return ch;
+            ch.setText(ch.getText().replaceAll("\\D", ""));
+            return ch.getControlNewText().length() <= 11 ? ch : null;
+        }));
+
         try {
             student = studentDAO.findByUserId(UserSession.getUserId());
         } catch (Exception e) {
@@ -50,13 +60,14 @@ public class ProfileController {
         // Summary
         nameLabel.setText(student.getFullName());
         avatarLabel.setText(initials(student));
-        studentNoLabel.setText("Student No. " + student.getStudentNo());
+        studentNoLabel.setText("LRN: " + Formats.text(student.getStudentNo()));
         StatusBadge.apply(statusBadge, student.getStatus());
 
         // Personal information
         genderValue.setText(Formats.text(student.getGender()));
         birthDateValue.setText(student.getBirthDate() == null
                 ? "-" : student.getBirthDate().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")));
+        loadEnrollmentInfo();
         emailValue.setText(Formats.text(student.getEmail()));
         usernameValue.setText(Formats.text(student.getUsername()));
 
@@ -70,8 +81,12 @@ public class ProfileController {
         String contactNo = contactNoField.getText().trim();
         String address = addressField.getText().trim();
 
-        if (!contactNo.isEmpty() && !contactNo.matches("[0-9+\\-\\s]{7,15}")) {
-            showMessage("Please enter a valid contact number (digits, spaces, + or - only).", false);
+        if (!contactNo.isEmpty() && !contactNo.matches("09\\d{9}")) {
+            showMessage("Contact number must be 11 digits and start with 09 (e.g., 09171234567).", false);
+            return;
+        }
+        if (!address.isEmpty() && (address.length() < 8 || !address.matches(".*\\p{L}.*"))) {
+            showMessage("Address is too short. Please include Purok/Street, Barangay, City/Municipality and Province.", false);
             return;
         }
 
@@ -90,6 +105,22 @@ public class ProfileController {
     // ---------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------
+    private void loadEnrollmentInfo() {
+        String gradeSection = "-";
+        String schoolYear = "-";
+        try {
+            String[] current = studentDAO.findCurrentEnrollment(student.getStudentId());
+            if (current != null) {
+                gradeSection = Formats.text(current[0]);
+                schoolYear = Formats.text(current[1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        gradeSectionValue.setText(gradeSection);
+        schoolYearValue.setText(schoolYear);
+    }
+
     private void showMessage(String text, boolean success) {
         messageLabel.getStyleClass().removeAll("message-success", "message-error");
         messageLabel.getStyleClass().add(success ? "message-success" : "message-error");

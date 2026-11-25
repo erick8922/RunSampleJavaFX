@@ -19,7 +19,7 @@ public class TranscriptController {
     @FXML
     private void initialize() {
         transcriptTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        transcriptTable.setPlaceholder(new Label("No transcript records found."));
+        transcriptTable.setPlaceholder(new Label("No Form 137 records found."));
         StatusBadge.setup(statusColumn);
 
         try {
@@ -28,7 +28,7 @@ public class TranscriptController {
                     new TranscriptDAO().findByStudentId(studentId)));
         } catch (Exception e) {
             e.printStackTrace();
-            transcriptTable.setPlaceholder(new Label("Unable to load your transcript. Please make sure MySQL is running."));
+            transcriptTable.setPlaceholder(new Label("Unable to load your Form 137 records. Please make sure MySQL is running."));
         }
     }
 }

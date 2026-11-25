@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import util.Navigator;
 import util.PasswordUtil;
 import util.UserSession;
@@ -20,6 +22,24 @@ public class LoginController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
+    @FXML private HBox rootBox;
+    @FXML private VBox brandPanel;
+    @FXML private VBox topBrand;
+
+    /** Below this width the blue school panel is hidden so the form has room. */
+    private static final double HIDE_BRAND_BELOW = 700;
+
+    @FXML
+    private void initialize() {
+        rootBox.widthProperty().addListener((obs, oldW, newW) -> {
+            boolean wide = newW.doubleValue() >= HIDE_BRAND_BELOW;
+            // Wide window: school panel on the left. Small window: school panel on top.
+            brandPanel.setVisible(wide);
+            brandPanel.setManaged(wide);
+            topBrand.setVisible(!wide);
+            topBrand.setManaged(!wide);
+        });
+    }
 
     // ---------------------------------------------------------
     // LOGIN
